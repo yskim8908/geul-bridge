@@ -3,152 +3,61 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>글‑Bridge | Features</title>
-  <meta name="description" content="Learn how 글‑Bridge works and what it does." />
-  <style>
-    /* --- Reset & Base --- */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.65;color:#0f172a;background:linear-gradient(180deg,#f8fafc, #eef2ff)}
-    img{max-width:100%;display:block}
-    a{color:inherit;text-decoration:none}
-    :root{
-      --bg:#ffffff;
-      --ink:#0f172a;
-      --muted:#475569;
-      --brand:#8b5cf6; /* indigo */
-      --brand-2:#a78bfa; /* green */
-      --card:#ffffffaa;
-      --ring:#c7d2fe;
-      --shadow:0 10px 25px rgba(2,6,23,.1);
-      --radius:18px;
-    }
-    @media (prefers-color-scheme: dark){
-      body{background:linear-gradient(180deg,#0b1020,#0b132b)}
-      :root{--bg:#0f172a;--ink:#e5e7eb;--muted:#a1a1aa;--card:#0b1228;--ring:#3730a3;--shadow:0 10px 25px rgba(0,0,0,.45)}
-    }
-
-    /* --- Layout --- */
-    .container{max-width:1160px;margin-inline:auto;padding:48px 24px}
-    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .logo{display:flex;align-items:center;gap:10px;font-weight:800}
-    .logo-badges{display:flex;gap:8px;align-items:center}
-    .badge{padding:6px 10px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;box-shadow:var(--shadow);font-size:12px}
-    .brand-mark{display:inline-flex;gap:6px}
-    .mark{width:22px;height:18px;border-radius:7px;border:2px solid #111}
-    .mark.one{background:#8b5cf6;border-color:#4338ca}
-    .mark.two{background:#a78bfa;border-color:#15803d;margin-left:-10px}
-    .logo-title{font-size:20px}
-
-    .hero{display:grid;grid-template-columns:1fr;gap:32px;align-items:start;margin-top:0;min-height:20vh}
-    .hero h1{font-size:42px;margin:0 0 12px}
-    .hero p{color:var(--muted);margin:0 0 24px}
-    .cta{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{padding:12px 18px;border-radius:14px;border:1px solid #0000;box-shadow:var(--shadow);font-weight:700}
-    .btn.primary{background:linear-gradient(135deg,var(--brand),#4f46e5);color:#fff}
-    .btn.ghost{border-color:#cbd5e1;background:transparent}
-
-    .card{background:var(--card);backdrop-filter: blur(8px);border:1px solid #e5e7eb;border-radius:var(--radius);box-shadow:var(--shadow)}
-    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
-    .feature{padding:16px}
-    .feature h3{margin:0 0 6px;font-size:16px}
-    .feature p{margin:0;color:var(--muted);font-size:14px}
-
-    .section{margin-top:28px}
-    .section h2{margin:0 0 12px;font-size:28px}
-    .section p.lead{color:var(--muted);margin-top:0}
-
-    /* --- How it works --- */
-    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .step{padding:16px}
-    .step b{display:block;margin-bottom:6px}
-
-    /* --- FAQ --- */
-    details{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:14px}
-    summary{cursor:pointer;font-weight:700}
-
-    /* --- Footer --- */
-    footer{margin-top:16px;padding:12px 0;color:var(--muted)}
-
-    /* --- Responsive --- */
-    @media (max-width: 900px){
-      .hero{grid-template-columns:1fr}
-      .features{grid-template-columns:repeat(2,1fr)}
-      .steps{grid-template-columns:1fr}
-    }
-
-    /* --- Mock-inspired header & hero --- */
-    body{background:linear-gradient(180deg,#faf7ff,#f3f0ff)}
-    .nav{display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .logo-icon{font-size:22px}
-    .nav-links{display:flex;gap:24px;align-items:center}
-    .nav-links a{color:#6b7280;font-weight:600}
-    .nav-links a:hover{color:#111827}
-    .btn.pill{border-radius:999px;padding:10px 18px}
-    .hero h1{font-size:56px;line-height:1.1;letter-spacing:-.02em;color:#6d5bd0}
-    .translator-card{max-width:480px;margin-left:auto;padding:22px}
-    .pill{background:#ede9fe;color:#4c1d95;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
-    .lang-row{display:flex;align-items:center;gap:10px}
-    .swap{padding:6px 10px;border-radius:999px;background:#ede9fe}
-    .icon{margin-left:auto}
-    .hr{height:1px;background:#e5e7eb;margin:20px 0}
-    .bubbles{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .bubble{background:#f4f4f5;border:1px solid #e7e7ea;padding:16px;border-radius:14px;font-size:14px;min-height:88px;line-height:1.6;display:flex;align-items:center}
-    main.container{padding-block:8px 20px}
-    .hero p{margin:0 0 16px}
-  </style>
+  <title>글-Bridge | Features</title>
+  <link rel="stylesheet" href="./shared.css" />
 </head>
 <body>
   <header class="container nav">
     <div class="brand">
       <span class="logo-icon" aria-hidden="true">🌐</span>
-      <a href="index.html" class="logo-title">글‑Bridge</a>
+      <a href="./index.html" class="logo-title" style="font-weight:800">글-Bridge</a>
     </div>
     <nav class="nav-links">
-      <a href="features.html">Features</a>
-      <a href="index.html#download">Download</a>
-      <a href="index.html#support">Support</a>
-      <a href="index.html#about">About</a>
+      <a href="./features.html" style="color:#111827;font-weight:800">Features</a>
+      <a href="./download.html">Download</a>
+      <a href="./support.html">Support</a>
+      <a href="./about.html">About</a>
     </nav>
-    <a href="index.html#download" class="btn primary pill">Free Download</a>
+    <a href="./download.html" class="btn primary pill">Free Download</a>
   </header>
 
   <main class="container">
-    <section class="hero">
-      <div class="hero-copy">
-        <h1>앱의 목적과 작동 원리</h1>
-        <p>글‑Bridge는 화면 속 텍스트를 즉시 추출해 자연스럽게 번역해 주는 도구입니다.</p>
-      </div>
+    <h1>Features</h1>
+    <p class="card"><b>Translate any on-screen text in place.</b> Drop a resizable floating window (“번역창”) over what you want to read. It never steals focus or blocks clicks—your apps keep working.</p>
+
+    <section class="card">
+      <h2 style="margin:0 0 8px">Highlights</h2>
+      <ul>
+        <li>🪟 <b>Non-intrusive overlay</b> — no intercepted keystrokes or mouse clicks.</li>
+        <li>🧠 <b>OCR → AI translation pipeline</b> (Windows OCR/Tesseract + DeepL/OpenAI).</li>
+        <li>⚡ <b>Fast & natural output</b> with latency-friendly processing.</li>
+        <li>🔒 <b>Privacy-first</b> — minimal data sent, no logging by default.</li>
+      </ul>
     </section>
 
-    <section class="features">
-      <article class="feature card"><h3>1) On‑screen translation</h3><p>Place a resizable rectangle anywhere and translate only what’s inside.</p></article>
-      <article class="feature card"><h3>2) Non‑intrusive design</h3><p>No stolen clicks or keystrokes—keep your workflow intact.</p></article>
-      <article class="feature card"><h3>3) Fast & natural</h3><p>Optimized OCR → translation pipeline for smooth, human‑like results.</p></article>
-      <article class="feature card"><h3>4) Private by default</h3><p>Minimal data sent, no logging.</p></article>
+    <section class="card">
+      <h2 style="margin:0 0 8px">How it works</h2>
+      <ol>
+        <li><b>Place</b> the window over the text area.</li>
+        <li><b>Capture & OCR</b> extracts clean text (English, Japanese, Korean, etc.).</li>
+        <li><b>Translate</b> via DeepL/OpenAI and render inside the same window.</li>
+      </ol>
     </section>
 
-    <section class="section">
-      <h2>How it works</h2>
-      <p class="lead">Place the capture box over any on-screen text, click to grab it, and the app instantly extracts and translates the content by AI.</p>
-      <div class="steps">
-        <div class="step card"><b>1) Place the window</b> Drop the rectangle over the text you need.</div>
-        <div class="step card"><b>2) Read the text</b> Screenshot inside the window → OCR extracts text.</div>
-        <div class="step card"><b>3) Translate naturally</b> DeepL/OpenAI produce clean, fluent output.</div>
-      </div>
+    <section class="card">
+      <h2 style="margin:0 0 8px">Tech & Privacy</h2>
+      <ul>
+        <li><b>Desktop</b>: PyQt overlay, screen capture (MSS), adjustable window.</li>
+        <li><b>OCR</b>: Windows OCR or Tesseract (tunable per language/scripts).</li>
+        <li><b>Translation</b>: DeepL/OpenAI (selectable backend).</li>
+        <li><b>Privacy</b>: Sends only the clipped region for translation if cloud is used; no keystroke capture; no logs unless user enables.</li>
+      </ul>
     </section>
 
-    <section id="support" class="section"></section>
-    <section id="about" class="section"></section>
-
-    <footer>
-      <div class="container" style="text-align:center">© <span id="y"></span> 글‑Bridge. All rights reserved.</div>
-    </footer>
+    <p><a class="btn" href="./index.html">← Back to Home</a></p>
   </main>
 
-  <script>
-    document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
+  <footer>© <span id="y"></span> 글-Bridge. All rights reserved.</footer>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
 </body>
 </html>
