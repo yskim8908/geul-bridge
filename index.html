@@ -95,7 +95,10 @@
   
     /* --- Mock-inspired header & hero --- */
     body{background:linear-gradient(180deg,#faf7ff,#f3f0ff)}
-    .nav{display:flex;align-items:center;gap:16px}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .nav-links{display:flex;gap:24px;align-items:center}
+    .nav-links a{color:#6b7280;font-weight:600}
+    .nav-links a:hover{color:#111827}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800}
     .logo-icon{font-size:22px}
     .btn.pill{border-radius:999px;padding:10px 18px}
@@ -130,6 +133,9 @@
       <span class="logo-icon" aria-hidden="true">🌐</span>
       <span class="logo-title">글‑Bridge</span>
     </div>
+    <nav class="nav-links">
+      <a href="about.html">About App</a>
+    </nav>
   </header>
 
   <main class="container">
@@ -237,4 +243,3 @@
     if(inEl && outEl){ cycle(); }
   </script>
 </body>
-</html>
