@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | 글‑Bridge</title>
+  <meta name="description" content="Login to 글-Bridge for screen translation service" />
+  <style>
+    /* --- Reset & Base --- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.65;color:#0f172a;background:linear-gradient(180deg,#faf7ff,#f3f0ff)}
+    a{color:inherit;text-decoration:none}
+    :root{
+      --bg:#ffffff;
+      --ink:#0f172a;
+      --muted:#475569;
+      --brand:#8b5cf6;
+      --brand-2:#a78bfa;
+      --card:#ffffffaa;
+      --ring:#c7d2fe;
+      --shadow:0 10px 25px rgba(2,6,23,.1);
+      --radius:18px;
+    }
+    @media (prefers-color-scheme: dark){
+      body{background:linear-gradient(180deg,#0b1020,#0b132b)}
+      :root{--bg:#0f172a;--ink:#e5e7eb;--muted:#a1a1aa;--card:#0b1228;--ring:#3730a3;--shadow:0 10px 25px rgba(0,0,0,.45)}
+    }
+
+    /* --- Layout --- */
+    .container{max-width:1160px;margin-inline:auto;padding:48px 24px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .nav-links{display:flex;gap:24px;align-items:center}
+    .nav-links a{color:#6b7280;font-weight:600}
+    .nav-links a:hover{color:#111827}
+    .logo-icon{font-size:22px}
+
+    /* --- Login Specific --- */
+    .login-container{max-width:480px;margin:60px auto;padding:0 24px}
+    .login-card{background:var(--card);backdrop-filter: blur(8px);border:1px solid #e5e7eb;border-radius:var(--radius);box-shadow:var(--shadow);padding:40px}
+    .login-header{text-align:center;margin-bottom:32px}
+    .login-header h1{font-size:32px;margin:0 0 8px;color:#6d5bd0}
+    .login-header p{color:var(--muted);margin:0}
+    
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;margin-bottom:8px;color:var(--ink);font-weight:600;font-size:14px}
+    .form-input{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:16px;background:var(--bg);color:var(--ink);transition:border-color 0.2s}
+    .form-input:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px rgba(139, 92, 246, 0.1)}
+    
+    .btn{padding:12px 18px;border-radius:14px;border:1px solid transparent;box-shadow:var(--shadow);font-weight:700;cursor:pointer;transition:all 0.2s}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),#4f46e5);color:#fff;width:100%;font-size:16px;margin-bottom:16px}
+    .btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 30px rgba(139, 92, 246, 0.3)}
+    
+    .toggle-link{text-align:center;color:var(--brand);cursor:pointer;font-weight:600;padding:8px}
+    .toggle-link:hover{text-decoration:underline}
+    
+    .message{padding:12px 16px;margin:16px 0;border-radius:12px;text-align:center;font-weight:600}
+    .message.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+    .message.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+    
+    #signupForm{display:none}
+    
+    .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:600;margin-bottom:24px;transition:color 0.2s}
+    .back-link:hover{color:var(--ink)}
+  </style>
+</head>
+<body>
+  <header class="container">
+    <div class="brand">
+      <span class="logo-icon" aria-hidden="true">🌐</span>
+      <span class="logo-title">글‑Bridge</span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About App</a>
+    </nav>
+  </header>
+
+  <div class="login-container">
+    <a href="index.html" class="back-link">
+      ← Back to Home
+    </a>
+    
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Welcome to 글‑Bridge</h1>
+        <p>Sign in to access your translation service</p>
+      </div>
+      
+      <div id="message"></div>
+
+      <!-- 로그인 폼 -->
+      <div id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email</label>
+          <input class="form-input" type="email" id="loginEmail" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input class="form-input" type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+        <button class="btn primary" onclick="login()">Sign In</button>
+        <div class="toggle-link" onclick="showSignup()">Don't have an account? Sign up</div>
+      </div>
+
+      <!-- 회원가입 폼 -->
+      <div id="signupForm">
+        <div class="form-group">
+          <label class="form-label" for="signupEmail">Email</label>
+          <input class="form-input" type="email" id="signupEmail" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPassword">Password</label>
+          <input class="form-input" type="password" id="signupPassword" placeholder="Create a password" required>
+        </div>
+        <button class="btn primary" onclick="signup()">Create Account</button>
+        <div class="toggle-link" onclick="showLogin()">Already have an account? Sign in</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC4VdgEW_lmklL16JKDqkjR9VGah6iQQDI",
+        authDomain: "deductive-ship-470913-d7.firebaseapp.com",
+        projectId: "deductive-ship-470913-d7",
+        storageBucket: "deductive-ship-470913-d7.firebasestorage.app",
+        messagingSenderId: "520798660367",
+        appId: "1:520798660367:web:d57a8e20ec01941646807a",
+        measurementId: "G-V37NNZ4PJ9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 전역 함수로 만들기
+    window.showSignup = function() {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+    }
+
+    window.showLogin = function() {
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+    }
+
+    window.showMessage = function(message, type = 'error') {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+        setTimeout(() => messageDiv.innerHTML = '', 5000);
+    }
+
+    window.signup = async function() {
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+
+        try {
+            // Firebase Authentication에 사용자 생성
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Firestore에 사용자 정보 저장
+            await setDoc(doc(db, 'users', user.uid), {
+                email: email,
+                balance: 100, // 기본 토큰 100개 지급
+                createdAt: new Date()
+            });
+
+            showMessage('Account created successfully! Please sign in.', 'success');
+            showLogin();
+        } catch (error) {
+            showMessage('Sign up failed: ' + error.message);
+        }
+    }
+
+    window.login = async function() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // 토큰을 파일에 저장 (앱이 읽을 수 있도록)
+            const token = await user.getIdToken();
+            
+            // 브라우저 다운로드로 토큰 파일 생성
+            const blob = new Blob([token], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'token.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showMessage('Login successful! token.txt file downloaded. Please save it to your app folder.', 'success');
+        } catch (error) {
+            showMessage('Login failed: ' + error.message);
+        }
+    }
+  </script>
+</body>
+</html>
