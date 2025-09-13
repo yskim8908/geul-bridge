@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Info | 글‑Bridge</title>
+  <meta name="description" content="User account information and token balance for 글‑Bridge" />
+  <style>
+    /* --- Reset & Base --- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.65;color:#0f172a;background:linear-gradient(180deg,#f8fafc, #eef2ff)}
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    
+    /* --- Layout --- */
+    .container{max-width:800px;margin-inline:auto;padding:48px 24px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .nav-links{display:flex;gap:24px;align-items:center}
+    .nav-links a{color:#6b7280;font-weight:600}
+    .nav-links a:hover{color:#111827}
+    .logo-icon{font-size:22px}
+    
+    /* --- User Page Specific --- */
+    .user-container{max-width:600px;margin:0 auto;padding:24px 0}
+    .user-card{background:#ffffff;border-radius:16px;padding:32px;box-shadow:0 4px 6px rgba(0,0,0,0.05);border:1px solid #e5e7eb;margin-bottom:24px}
+    .user-header{text-align:center;margin-bottom:32px}
+    .user-header h1{font-size:32px;margin:0 0 8px;color:#4c1d95}
+    .user-header p{color:#6b7280;margin:0}
+    
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+    .info-item{text-align:center;padding:20px;background:#f8fafc;border-radius:12px;border:1px solid #e5e7eb}
+    .info-item .label{font-size:14px;color:#6b7280;margin-bottom:8px}
+    .info-item .value{font-size:24px;font-weight:700;color:#111827}
+    .info-item.balance .value{color:#059669}
+    .info-item.used .value{color:#dc2626}
+    
+    .user-details{margin-top:24px}
+    .detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9}
+    .detail-row:last-child{border-bottom:none}
+    .detail-label{color:#6b7280;font-weight:500}
+    .detail-value{color:#111827;font-weight:600}
+    
+    .loading{text-align:center;padding:40px;color:#6b7280}
+    .error{text-align:center;padding:40px;color:#dc2626;background:#fef2f2;border-radius:12px;border:1px solid #fecaca}
+    
+    .refresh-btn{background:linear-gradient(135deg,#8b5cf6,#4f46e5);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;margin-top:24px}
+    .refresh-btn:hover{opacity:0.9}
+  </style>
+</head>
+<body>
+  <header class="container">
+    <a href="index.html" class="brand">
+      <span class="logo-icon" aria-hidden="true">🌐</span>
+      <span class="logo-title">글‑Bridge</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About App</a>
+      <a href="login.html">Login</a>
+      <a href="user.html" style="color: #8b5cf6; font-weight: 700;">User</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="user-container">
+      
+      <!-- Loading State -->
+      <div id="loading" class="loading">
+        <p>Loading user information...</p>
+      </div>
+      
+      <!-- Error State -->
+      <div id="error" class="error" style="display: none;">
+        <p id="error-message">Unable to load information.</p>
+        <button class="refresh-btn" onclick="loadUserInfo()">Try Again</button>
+      </div>
+      
+      <!-- User Information -->
+      <div id="user-info" style="display: none;">
+        <div class="user-card">
+          <div class="user-header">
+            <h1>👤 User Information</h1>
+            <p id="user-email">Loading email...</p>
+          </div>
+          
+          <div class="info-grid">
+            <div class="info-item balance">
+              <div class="label">💰 Remaining Tokens</div>
+              <div class="value" id="balance">-</div>
+            </div>
+            <div class="info-item used">
+              <div class="label">📊 Used Tokens</div>
+              <div class="value" id="total-used">-</div>
+            </div>
+          </div>
+          
+          <div class="user-details">
+            <div class="detail-row">
+              <span class="detail-label">Email</span>
+              <span class="detail-value" id="detail-email">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Join Date</span>
+              <span class="detail-value" id="created-at">-</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Last Login</span>
+              <span class="detail-value" id="last-login">-</span>
+            </div>
+          </div>
+          
+          <button class="refresh-btn" onclick="loadUserInfo()">Refresh Info</button>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+
+  <script>
+    // Get user email from localStorage
+    function getCurrentUserEmail() {
+      return localStorage.getItem('user_email') || sessionStorage.getItem('user_email');
+    }
+    
+    // Date format function
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return dateString;
+      }
+    }
+    
+    // Load user information
+    async function loadUserInfo() {
+      const email = getCurrentUserEmail();
+      
+      if (!email) {
+        showError('Login required. Please go to the login page.');
+        return;
+      }
+      
+      showLoading();
+      
+      try {
+        const response = await fetch(`https://us-central1-deductive-ship-470913-d7.cloudfunctions.net/getUserInfo?email=${encodeURIComponent(email)}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        // Display information
+        document.getElementById('user-email').textContent = data.email;
+        document.getElementById('detail-email').textContent = data.email;
+        document.getElementById('balance').textContent = data.balance || 0;
+        document.getElementById('total-used').textContent = data.total_used || 0;
+        document.getElementById('created-at').textContent = formatDate(data.created_at);
+        document.getElementById('last-login').textContent = formatDate(data.last_login);
+        
+        showUserInfo();
+        
+      } catch (error) {
+        console.error('User info load error:', error);
+        showError(`Unable to load information: ${error.message}`);
+      }
+    }
+    
+    // UI state functions
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('user-info').style.display = 'none';
+    }
+    
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('user-info').style.display = 'none';
+      document.getElementById('error-message').textContent = message;
+    }
+    
+    function showUserInfo() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('user-info').style.display = 'block';
+    }
+    
+    // Auto load user info on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserInfo();
+    });
+  </script>
+</body>
+</html>
