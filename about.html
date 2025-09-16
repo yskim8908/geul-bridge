@@ -17,6 +17,13 @@
     h1{font-size:40px;margin:0 0 24px;color:#4c1d95}
     h2{font-size:24px;margin:32px 0 12px}
     ul{margin:0;padding-left:18px}
+    
+    /* --- Auth Navigation Styles --- */
+    .auth-section{display:flex;align-items:center;gap:12px}
+    .login-btn,.logout-btn{background:linear-gradient(135deg,#8b5cf6,#4f46e5);color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:14px}
+    .login-btn:hover,.logout-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+    .user-info{color:#4c1d95;font-size:14px;font-weight:600;margin-right:8px}
+    .logged-in{background:rgba(139,92,246,0.1);padding:6px 12px;border-radius:12px}
   </style>
 </head>
 <body>
@@ -28,8 +35,10 @@
     <nav class="nav-links">
       <a href="index.html">Home</a>
       <a href="about.html" style="color: #8b5cf6; font-weight: 700;">About App</a>
-      <a href="login.html">Login</a>
       <a href="user.html">User</a>
+      <div id="auth-button" class="auth-section">
+        <!-- 동적으로 로그인/로그아웃 버튼이 들어갈 자리 -->
+      </div>
     </nav>
   </header>
   <main class="container">
@@ -59,5 +68,69 @@
       </ul>
     </section>
   </main>
+
+  <script>
+    // --- Auth Navigation Logic ---
+    function isLoggedIn() {
+      const email = localStorage.getItem('user_email') || sessionStorage.getItem('user_email');
+      return !!email;
+    }
+
+    function getCurrentUserEmail() {
+      return localStorage.getItem('user_email') || sessionStorage.getItem('user_email');
+    }
+
+    function logout() {
+      localStorage.removeItem('user_email');
+      sessionStorage.removeItem('user_email');
+      updateNavigation();
+      
+      // 다른 탭에 알림 (Custom Event)
+      window.dispatchEvent(new CustomEvent('authChanged'));
+      
+      alert('로그아웃되었습니다.');
+    }
+
+    function goToLogin() {
+      window.location.href = 'login.html';
+    }
+
+    function updateNavigation() {
+      const authButton = document.getElementById('auth-button');
+      if (!authButton) return;
+      
+      const loggedIn = isLoggedIn();
+      const userEmail = getCurrentUserEmail();
+      
+      if (loggedIn) {
+        // 로그인 상태: 사용자명 + 로그아웃 버튼
+        const username = userEmail.split('@')[0];
+        authButton.innerHTML = `
+          <span class="user-info">👤 ${username}</span>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        `;
+        authButton.className = 'auth-section logged-in';
+      } else {
+        // 로그아웃 상태: 로그인 버튼만
+        authButton.innerHTML = `
+          <button class="login-btn" onclick="goToLogin()">Login</button>
+        `;
+        authButton.className = 'auth-section logged-out';
+      }
+    }
+
+    // 페이지 로드 시 네비게이션 업데이트
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      
+      // Storage Event로 탭 간 동기화 (다른 탭에서 변경 시)
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'user_email') updateNavigation();
+      });
+      
+      // Custom Event로 같은 탭 내 동기화
+      window.addEventListener('authChanged', updateNavigation);
+    });
+  </script>
 </body>
 </html>
