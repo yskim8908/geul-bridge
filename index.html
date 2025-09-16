@@ -268,6 +268,10 @@
       localStorage.removeItem('user_email');
       sessionStorage.removeItem('user_email');
       updateNavigation();
+      
+      // 다른 탭에 알림 (Custom Event)
+      window.dispatchEvent(new CustomEvent('authChanged'));
+      
       alert('로그아웃되었습니다.');
     }
 
@@ -303,8 +307,13 @@
     document.addEventListener('DOMContentLoaded', function() {
       updateNavigation();
       
-      // 1초마다 로그인 상태 확인 (다른 탭에서 로그인/로그아웃 시 반영)
-      setInterval(updateNavigation, 1000);
+      // Storage Event로 탭 간 동기화 (다른 탭에서 변경 시)
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'user_email') updateNavigation();
+      });
+      
+      // Custom Event로 같은 탭 내 동기화
+      window.addEventListener('authChanged', updateNavigation);
     });
   </script>
 </body>
