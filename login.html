@@ -146,54 +146,33 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 1단계: 앱 감지 로직 구현
-    async function detectApp() {
-        try {
-            const response = await fetch('http://localhost:8080/ping', {
-                method: 'GET',
-                signal: AbortSignal.timeout(500) // 0.5초 타임아웃
-            });
-            return response.ok;
-        } catch (error) {
-            return false; // 앱 없음
-        }
-    }
-
-    // 2단계: 로그인 성공 후 처리 함수들
+    // Firebase Authentication 기반 로그인 처리
     async function handleLoginSuccess(email, token) {
-        showMessage('Checking for desktop app...', 'info');
-        const isAppRunning = await detectApp();
+        // Firebase에만 의존 - 로컬서버 통신 없음
+        showMessage('Login successful! Please restart the desktop app.', 'success');
         
-        if (isAppRunning) {
-            handleAppMode(email);
-        } else {
-            handleWebMode(email);
-        }
-    }
-
-    async function handleAppMode(email) {
-        try {
-            const appResponse = await fetch('http://localhost:8080/login-success', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email })
-            });
-
-            if (appResponse.ok) {
-                showMessage('Login successful! You can now close this window.', 'success');
-            } else {
-                throw new Error('App communication failed');
-            }
-        } catch (error) {
-            showMessage('Failed to connect to app. Please try again.', 'error');
-        }
-    }
-
-    function handleWebMode(email) {
+        // 웹 모드로도 사용 가능하도록 localStorage 저장
         localStorage.setItem('user_email', email);
-        showMessage('Login successful! Redirecting to dashboard...', 'success');
+        
+        // 앱 재시작 안내 메시지 표시
         setTimeout(() => {
-            window.location.href = 'user.html';
+            showMessage('✅ Login completed! Now restart your desktop app to continue.', 'info');
+            
+            // 웹 모드 옵션도 제공
+            setTimeout(() => {
+                const webModeBtn = document.createElement('button');
+                webModeBtn.textContent = 'Continue in Web Mode';
+                webModeBtn.className = 'btn secondary';
+                webModeBtn.style.marginTop = '10px';
+                webModeBtn.onclick = () => {
+                    window.location.href = 'user.html';
+                };
+                
+                const messageDiv = document.getElementById('message');
+                if (messageDiv) {
+                    messageDiv.appendChild(webModeBtn);
+                }
+            }, 3000);
         }, 2000);
     }
 
