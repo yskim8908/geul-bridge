@@ -47,6 +47,37 @@
     
     .refresh-btn{background:linear-gradient(135deg,#8b5cf6,#4f46e5);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;margin-top:24px}
     .refresh-btn:hover{opacity:0.9}
+    
+    /* --- Delete Button Styles --- */
+    .delete-btn{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .delete-btn:hover{opacity:0.9;transform:translateY(-1px)}
+    
+    /* --- Modal Styles --- */
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.6);backdrop-filter:blur(2px)}
+    .modal-content{background-color:#fff;margin:10% auto;padding:32px;border-radius:16px;width:90%;max-width:500px;box-shadow:0 20px 40px rgba(0,0,0,0.3);animation:modalSlideIn 0.3s ease-out}
+    
+    @keyframes modalSlideIn{
+      from{transform:translateY(-50px);opacity:0}
+      to{transform:translateY(0);opacity:1}
+    }
+    
+    .modal-header{text-align:center;margin-bottom:24px}
+    .modal-header h2{color:#dc2626;margin:0 0 8px;font-size:28px}
+    .modal-header p{color:#6b7280;margin:0;font-size:16px}
+    
+    .warning-box{background:#fef2f2;padding:20px;border-radius:12px;border:1px solid #fecaca;margin:20px 0}
+    .warning-box p{margin:0 0 8px;color:#991b1b;font-weight:600}
+    .warning-box ul{margin:8px 0 0 0;color:#991b1b}
+    
+    .confirm-input{width:100%;padding:14px;border:2px solid #d1d5db;border-radius:8px;margin:16px 0;font-size:16px;transition:border-color 0.2s}
+    .confirm-input:focus{outline:none;border-color:#dc2626}
+    .confirm-input.valid{border-color:#059669}
+    
+    .modal-buttons{display:flex;gap:12px;justify-content:center;margin-top:24px}
+    .confirm-btn{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .cancel-btn{background:#6b7280;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .confirm-btn:hover:not(:disabled),.cancel-btn:hover{opacity:0.9;transform:translateY(-1px)}
+    .confirm-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
   </style>
 </head>
 <body>
@@ -111,7 +142,46 @@
             </div>
           </div>
           
-          <button class="refresh-btn" onclick="loadUserInfo()">Refresh Info</button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+            <button class="refresh-btn" onclick="loadUserInfo()">🔄 Refresh Info</button>
+            <button class="delete-btn" onclick="showDeleteModal()">🗑️ Delete Account</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Delete Account Modal -->
+      <div id="deleteModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>⚠️ Delete Account</h2>
+            <p>This action cannot be undone and will be processed immediately.</p>
+          </div>
+          
+          <div class="warning-box">
+            <p>⚠️ This will permanently delete:</p>
+            <ul>
+              <li>Your account and login access</li>
+              <li>All remaining tokens</li>
+              <li>Translation history and usage data</li>
+              <li>All personal information</li>
+            </ul>
+            <p style="margin-top: 12px; font-size: 14px;">
+              📅 Your data will be completely removed from our servers within 30 days as per our privacy policy.
+            </p>
+          </div>
+          
+          <div style="color: #374151; margin: 16px 0;">
+            <p style="margin: 0 0 8px;">To confirm deletion, please type <strong style="color: #dc2626;">DELETE</strong> below:</p>
+            <input type="text" id="confirmInput" class="confirm-input" 
+                   placeholder="Type DELETE here" autocomplete="off">
+          </div>
+          
+          <div class="modal-buttons">
+            <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+            <button class="confirm-btn" onclick="confirmDelete()" id="confirmDeleteBtn" disabled>
+              Delete My Account
+            </button>
+          </div>
         </div>
       </div>
       
@@ -220,9 +290,167 @@
       document.getElementById('user-info').style.display = 'block';
     }
     
+    // === Account Deletion Functions ===
+    
+    function showDeleteModal() {
+      const email = getCurrentUserEmail();
+      
+      if (!email) {
+        alert('❌ Login required. Please login first.');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const modal = document.getElementById('deleteModal');
+      const confirmInput = document.getElementById('confirmInput');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      
+      // Reset modal state
+      confirmInput.value = '';
+      confirmInput.className = 'confirm-input';
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Delete My Account';
+      
+      // Show modal
+      modal.style.display = 'block';
+      
+      // Focus on input after animation
+      setTimeout(() => confirmInput.focus(), 300);
+    }
+    
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+    
+    function validateDeleteInput() {
+      const confirmInput = document.getElementById('confirmInput');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const inputValue = confirmInput.value.trim();
+      
+      if (inputValue === 'DELETE') {
+        confirmInput.className = 'confirm-input valid';
+        confirmBtn.disabled = false;
+      } else {
+        confirmInput.className = 'confirm-input';
+        confirmBtn.disabled = true;
+      }
+    }
+    
+    async function confirmDelete() {
+      const email = getCurrentUserEmail();
+      const confirmInput = document.getElementById('confirmInput');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      
+      if (!email) {
+        alert('❌ Login session expired. Please login again.');
+        closeDeleteModal();
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      if (confirmInput.value.trim() !== 'DELETE') {
+        alert('❌ Please type DELETE exactly as shown to confirm.');
+        confirmInput.focus();
+        return;
+      }
+      
+      // Show loading state
+      const originalText = confirmBtn.textContent;
+      confirmBtn.textContent = '⏳ Deleting...';
+      confirmBtn.disabled = true;
+      
+      try {
+        console.log('Attempting to delete account for:', email);
+        
+        // Call backend API
+        const response = await fetch('https://us-central1-deductive-ship-470913-d7.cloudfunctions.net/deleteAccount', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email: email,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        console.log('Delete response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Delete error response:', errorText);
+          throw new Error(`Server error (${response.status}): ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Delete response data:', data);
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        // Success - clear storage and redirect
+        localStorage.removeItem('user_email');
+        sessionStorage.removeItem('user_email');
+        
+        // Notify other tabs about logout
+        window.dispatchEvent(new CustomEvent('authChanged'));
+        
+        alert('✅ Account deleted successfully!\n\nYour data will be completely removed within 30 days.\nYou will now be redirected to the home page.');
+        
+        // Redirect to home page
+        window.location.href = 'index.html';
+        
+      } catch (error) {
+        console.error('Account deletion failed:', error);
+        
+        // Reset button state
+        confirmBtn.textContent = originalText;
+        confirmBtn.disabled = false;
+        
+        // Show user-friendly error message
+        let errorMessage = 'Failed to delete account. ';
+        if (error.message.includes('404')) {
+          errorMessage += 'Account not found.';
+        } else if (error.message.includes('500')) {
+          errorMessage += 'Server error. Please try again later.';
+        } else {
+          errorMessage += error.message;
+        }
+        
+        alert('❌ ' + errorMessage);
+      }
+    }
+    
     // Auto load user info on page load
     document.addEventListener('DOMContentLoaded', function() {
       loadUserInfo();
+      
+      // Set up delete confirmation input validation
+      const confirmInput = document.getElementById('confirmInput');
+      if (confirmInput) {
+        confirmInput.addEventListener('input', validateDeleteInput);
+        confirmInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter' && !document.getElementById('confirmDeleteBtn').disabled) {
+            confirmDelete();
+          }
+        });
+      }
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+          closeDeleteModal();
+        }
+      });
+      
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeDeleteModal();
+        }
+      });
     });
   </script>
 </body>
