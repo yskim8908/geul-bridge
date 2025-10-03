@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Us | 글‑Bridge</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Noto Sans KR,sans-serif;line-height:1.65;color:#0f172a;background:linear-gradient(180deg,#f8fafc, #eef2ff)}
+    a{color:inherit;text-decoration:none}
+    
+    .container{max-width:800px;margin-inline:auto;padding:48px 24px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .nav-links{display:flex;gap:24px;align-items:center}
+    .nav-links a{color:#6b7280;font-weight:600}
+    .nav-links a:hover{color:#111827}
+    .logo-icon{width:22px;height:22px;object-fit:contain}
+    
+    .auth-section{display:flex;align-items:center;gap:12px}
+    .login-btn,.logout-btn{background:linear-gradient(135deg,#8b5cf6,#4f46e5);color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:14px}
+    .login-btn:hover,.logout-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+    .user-info{color:#4c1d95;font-size:14px;font-weight:600;margin-right:8px}
+    .logged-in{background:rgba(139,92,246,0.1);padding:6px 12px;border-radius:12px}
+    
+    .contact-section{text-align:center;max-width:600px;margin:60px auto;padding:40px}
+    .contact-section h1{font-size:42px;margin:0 0 16px;color:#4c1d95}
+    .contact-section p{font-size:18px;color:#6b7280;margin:0 0 32px}
+    .email-box{background:#ffffff;border-radius:16px;padding:32px;box-shadow:0 4px 6px rgba(0,0,0,0.05);border:1px solid #e5e7eb}
+    .email-address{font-size:24px;color:#8b5cf6;font-weight:700;margin:16px 0}
+    .email-link{color:#8b5cf6;text-decoration:none}
+    .email-link:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <header class="container">
+    <a href="index.html" class="brand">
+      <img src="logo.png" alt="geul-bridge logo" class="logo-icon">
+      <span class="logo-title">geul-bridge</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About App</a>
+      <a href="user.html">User</a>
+      <a href="contact.html" style="color: #8b5cf6; font-weight: 700;">Contact</a>
+      <div id="auth-button" class="auth-section">
+        <!-- 동적으로 로그인/로그아웃 버튼이 들어갈 자리 -->
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="contact-section">
+      <p style="color: #4c1d95; font-weight: 600; margin-bottom: 8px;">Get the help you need</p>
+      <h1>Contact Us</h1>
+      <p>If you need to get in touch, email us directly. We typically respond to emails within 24 hours during business days.</p>
+      
+      <div class="email-box">
+        <div class="email-address">
+          <a href="mailto:geulbridge@gmail.com" class="email-link">geulbridge@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // --- Auth Navigation Logic (기존과 동일) ---
+    function isLoggedIn() {
+      const email = localStorage.getItem('user_email') || sessionStorage.getItem('user_email');
+      return !!email;
+    }
+
+    function getCurrentUserEmail() {
+      return localStorage.getItem('user_email') || sessionStorage.getItem('user_email');
+    }
+
+    function logout() {
+      localStorage.removeItem('user_email');
+      sessionStorage.removeItem('user_email');
+      updateNavigation();
+      window.dispatchEvent(new CustomEvent('authChanged'));
+      alert('로그아웃되었습니다.');
+    }
+
+    function goToLogin() {
+      window.location.href = 'login.html';
+    }
+
+    function updateNavigation() {
+      const authButton = document.getElementById('auth-button');
+      if (!authButton) return;
+      
+      const loggedIn = isLoggedIn();
+      const userEmail = getCurrentUserEmail();
+      
+      if (loggedIn) {
+        const username = userEmail.split('@')[0];
+        authButton.innerHTML = `
+          <span class="user-info">👤 ${username}</span>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        `;
+        authButton.className = 'auth-section logged-in';
+      } else {
+        authButton.innerHTML = `
+          <button class="login-btn" onclick="goToLogin()">Login</button>
+        `;
+        authButton.className = 'auth-section logged-out';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavigation();
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'user_email') updateNavigation();
+      });
+      window.addEventListener('authChanged', updateNavigation);
+    });
+  </script>
+</body>
+</html>
